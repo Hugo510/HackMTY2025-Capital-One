@@ -59,7 +59,6 @@ export default function AccountsScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.greeting}>Hola</Text>
           <Text style={styles.headerTitle}>Tus Cuentas</Text>
         </View>
         <TouchableOpacity
@@ -81,7 +80,7 @@ export default function AccountsScreen() {
         </Text>
       </View>
 
-      <View style={styles.actionsRow}>
+      {/* <View style={styles.actionsRow}>
         <TouchableOpacity
           style={styles.actionButton}
           onPress={() => setShowVoiceModal(true)}
@@ -91,7 +90,7 @@ export default function AccountsScreen() {
           </View>
           <Text style={styles.actionText}>Agregar por Voz</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
 
       <ScrollView
         style={styles.accountsList}
@@ -183,7 +182,6 @@ const styles = StyleSheet.create({
   totalCard: {
     backgroundColor: Colors.neutral.white,
     marginHorizontal: Spacing.lg,
-    marginTop: -Spacing.xl,
     padding: Spacing.lg,
     borderRadius: BorderRadius.lg,
     shadowColor: Colors.primary.dark,
@@ -191,6 +189,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 4,
+    marginTop: 20,
   },
   totalLabel: {
     fontSize: Typography.fontSize.sm,

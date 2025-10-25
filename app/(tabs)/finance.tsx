@@ -93,12 +93,12 @@ export default function FinanceScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Finanzas Personales</Text>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.voiceButton}
           onPress={() => setShowVoiceModal(true)}
         >
           <Mic size={20} color={Colors.neutral.white} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       <ScrollView

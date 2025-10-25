@@ -107,12 +107,12 @@ export default function PaymentsScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Pagos y Movimientos</Text>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.voiceButton}
           onPress={() => setShowVoiceModal(true)}
         >
           <Mic size={20} color={Colors.neutral.white} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       <ScrollView
