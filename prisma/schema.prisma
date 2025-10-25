@@ -6,6 +6,7 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
 // Models generated to reflect the provided SQL schema (Spanish table names).
 // Mantengo el generator y datasource originales.
 
@@ -67,91 +68,92 @@ enum Result {
 }
 
 model Usuario {
-  id_usuario     Int                    @id @default(autoincrement())
-  nombre_completo String                @db.VarChar(100)
-  email          String                 @unique @db.VarChar(100)
-  telefono       String?                @db.VarChar(20)
-  password_hash  String                 @db.VarChar(255)
-  pin_hash       String                 @db.VarChar(255)
-  fecha_registro DateTime               @default(now())
-  ultimo_acceso  DateTime?
-  activo         Boolean                @default(true)
+  id_usuario      Int       @id @default(autoincrement())
+  nombre_completo String    @db.VarChar(100)
+  email           String    @unique @db.VarChar(100)
+  telefono        String?   @db.VarChar(20)
+  password_hash   String    @db.VarChar(255)
+  pin_hash        String    @db.VarChar(255)
+  fecha_registro  DateTime  @default(now())
+  ultimo_acceso   DateTime?
+  activo          Boolean   @default(true)
 
-  preguntas Seguridad[]
-  cuentas       Cuenta[]
-  presupuestos  Presupuesto[]
-  alertas       AlertaConfig[]
+  preguntas      Seguridad[]
+  cuentas        Cuenta[]
+  presupuestos   Presupuesto[]
+  alertas        AlertaConfig[]
   notificaciones Notificacion[]
-  sesiones      Sesion[]
-  logs          LogSeguridad[]
+  sesiones       Sesion[]
+  logs           LogSeguridad[]
 
   @@map("usuarios")
 }
 
 model Seguridad {
-  id_pregunta   Int      @id @default(autoincrement())
-  id_usuario    Int
-  pregunta      String   @db.VarChar(200)
-  respuesta_hash String  @db.VarChar(255)
-  orden         Int
+  id_pregunta    Int      @id @default(autoincrement())
+  id_usuario     Int
+  pregunta       String   @db.VarChar(200)
+  respuesta_hash String   @db.VarChar(255)
+  orden          Int
   fecha_creacion DateTime @default(now())
 
-  usuario       Usuario  @relation(fields: [id_usuario], references: [id_usuario], onDelete: Cascade)
+  usuario Usuario @relation(fields: [id_usuario], references: [id_usuario], onDelete: Cascade)
 
   @@unique([id_usuario, orden], map: "unique_usuario_orden")
   @@map("preguntas_seguridad")
 }
 
 model Cuenta {
-  id_cuenta           Int         @id @default(autoincrement())
-  id_usuario          Int
-  nessie_account_id   String?     @unique @db.VarChar(50)
-  nessie_customer_id  String?     @db.VarChar(50)
-  tipo_cuenta         AccountType
-  nombre_cuenta       String      @db.VarChar(100)
-  balance             Decimal     @default(0) @db.Decimal(15, 2)
+  id_cuenta             Int         @id @default(autoincrement())
+  id_usuario            Int
+  nessie_account_id     String?     @unique @db.VarChar(50)
+  nessie_customer_id    String?     @db.VarChar(50)
+  tipo_cuenta           AccountType
+  nombre_cuenta         String      @db.VarChar(100)
+  balance               Decimal     @default(0) @db.Decimal(15, 2)
   ultima_sincronizacion DateTime?
-  fecha_creacion      DateTime    @default(now())
-  activa              Boolean     @default(true)
+  fecha_creacion        DateTime    @default(now())
+  activa                Boolean     @default(true)
 
-  usuario             Usuario     @relation(fields: [id_usuario], references: [id_usuario], onDelete: Cascade)
-  transacciones       Transaccion[]
+  usuario       Usuario        @relation(fields: [id_usuario], references: [id_usuario], onDelete: Cascade)
+  transacciones Transaccion[]
+  alertas       AlertaConfig[]
 
   @@index([nessie_account_id], map: "idx_nessie_account")
   @@map("cuentas")
 }
 
 model Categoria {
-  id_categoria    Int       @id @default(autoincrement())
-  nombre_categoria String   @unique @db.VarChar(50)
-  descripcion     String?   @db.VarChar(200)
-  icono           String?   @db.VarChar(50)
-  color           String?   @db.VarChar(7)
-  tipo            CategoryType @default(gasto)
-  es_sistema      Boolean   @default(false)
+  id_categoria     Int          @id @default(autoincrement())
+  nombre_categoria String       @unique @db.VarChar(50)
+  descripcion      String?      @db.VarChar(200)
+  icono            String?      @db.VarChar(50)
+  color            String?      @db.VarChar(7)
+  tipo             CategoryType @default(gasto)
+  es_sistema       Boolean      @default(false)
 
-  transacciones   Transaccion[]
-  presupuestos    Presupuesto[]
+  transacciones Transaccion[]
+  presupuestos  Presupuesto[]
 
   @@map("categorias")
 }
 
 model Transaccion {
-  id_transaccion     Int            @id @default(autoincrement())
-  id_cuenta          Int
-  id_categoria       Int?
-  nessie_transaction_id String?     @unique @db.VarChar(50)
-  tipo_transaccion   TransactionType
-  monto              Decimal        @db.Decimal(15, 2)
-  descripcion        String?
-  merchant_nombre    String?        @db.VarChar(100)
-  merchant_id        String?        @db.VarChar(50)
-  fecha_transaccion  DateTime
-  fecha_registro     DateTime       @default(now())
-  estado             TransactionStatus @default(completed)
+  id_transaccion        Int               @id @default(autoincrement())
+  id_cuenta             Int
+  id_categoria          Int?
+  nessie_transaction_id String?           @unique @db.VarChar(50)
+  tipo_transaccion      TransactionType
+  monto                 Decimal           @db.Decimal(15, 2)
+  descripcion           String?
+  merchant_nombre       String?           @db.VarChar(100)
+  merchant_id           String?           @db.VarChar(50)
+  fecha_transaccion     DateTime
+  fecha_registro        DateTime          @default(now())
+  estado                TransactionStatus @default(completed)
 
-  cuenta             Cuenta         @relation(fields: [id_cuenta], references: [id_cuenta], onDelete: Cascade)
-  categoria          Categoria?     @relation(fields: [id_categoria], references: [id_categoria], onDelete: SetNull)
+  cuenta    Cuenta     @relation(fields: [id_cuenta], references: [id_cuenta], onDelete: Cascade)
+  categoria Categoria? @relation(fields: [id_categoria], references: [id_categoria], onDelete: SetNull)
 
   @@index([fecha_transaccion], map: "idx_fecha")
   @@index([id_cuenta, fecha_transaccion], map: "idx_cuenta_fecha")
@@ -159,20 +161,21 @@ model Transaccion {
 }
 
 model Presupuesto {
-  id_presupuesto   Int       @id @default(autoincrement())
-  id_usuario       Int
-  id_categoria     Int
-  nombre_presupuesto String  @db.VarChar(100)
-  monto_limite     Decimal   @db.Decimal(15, 2)
-  monto_gastado    Decimal   @default(0) @db.Decimal(15, 2)
-  periodo          Periodo   @default(mensual)
-  fecha_inicio     DateTime  @db.Date
-  fecha_fin        DateTime  @db.Date
-  activo           Boolean   @default(true)
-  fecha_creacion   DateTime  @default(now())
+  id_presupuesto     Int      @id @default(autoincrement())
+  id_usuario         Int
+  id_categoria       Int
+  nombre_presupuesto String   @db.VarChar(100)
+  monto_limite       Decimal  @db.Decimal(15, 2)
+  monto_gastado      Decimal  @default(0) @db.Decimal(15, 2)
+  periodo            Periodo  @default(mensual)
+  fecha_inicio       DateTime @db.Date
+  fecha_fin          DateTime @db.Date
+  activo             Boolean  @default(true)
+  fecha_creacion     DateTime @default(now())
 
-  usuario          Usuario   @relation(fields: [id_usuario], references: [id_usuario], onDelete: Cascade)
-  categoria        Categoria @relation(fields: [id_categoria], references: [id_categoria], onDelete: Cascade)
+  usuario   Usuario        @relation(fields: [id_usuario], references: [id_usuario], onDelete: Cascade)
+  categoria Categoria      @relation(fields: [id_categoria], references: [id_categoria], onDelete: Cascade)
+  alertas   AlertaConfig[]
 
   @@index([id_usuario, periodo], map: "idx_usuario_periodo")
   @@index([fecha_fin], map: "idx_fecha_fin")
@@ -180,39 +183,39 @@ model Presupuesto {
 }
 
 model AlertaConfig {
-  id_alerta_config Int         @id @default(autoincrement())
-  id_usuario       Int
-  tipo_alerta      AlertType
-  activa           Boolean     @default(true)
-  umbral_valor     Decimal?    @db.Decimal(15, 2)
+  id_alerta_config  Int       @id @default(autoincrement())
+  id_usuario        Int
+  tipo_alerta       AlertType
+  activa            Boolean   @default(true)
+  umbral_valor      Decimal?  @db.Decimal(15, 2)
   porcentaje_umbral Int?
-  id_presupuesto   Int?
-  id_cuenta        Int?
-  fecha_creacion   DateTime    @default(now())
+  id_presupuesto    Int?
+  id_cuenta         Int?
+  fecha_creacion    DateTime  @default(now())
 
-  usuario          Usuario     @relation(fields: [id_usuario], references: [id_usuario], onDelete: Cascade)
-  presupuesto      Presupuesto? @relation(fields: [id_presupuesto], references: [id_presupuesto], onDelete: Cascade)
-  cuenta           Cuenta?     @relation(fields: [id_cuenta], references: [id_cuenta], onDelete: Cascade)
+  usuario     Usuario      @relation(fields: [id_usuario], references: [id_usuario], onDelete: Cascade)
+  presupuesto Presupuesto? @relation(fields: [id_presupuesto], references: [id_presupuesto], onDelete: Cascade)
+  cuenta      Cuenta?      @relation(fields: [id_cuenta], references: [id_cuenta], onDelete: Cascade)
 
-  notificaciones   Notificacion[]
+  notificaciones Notificacion[]
 
   @@map("alertas_config")
 }
 
 model Notificacion {
-  id_notificacion  Int              @id @default(autoincrement())
-  id_usuario       Int
-  id_alerta_config Int?
+  id_notificacion   Int              @id @default(autoincrement())
+  id_usuario        Int
+  id_alerta_config  Int?
   tipo_notificacion NotificationType
-  titulo           String           @db.VarChar(200)
-  mensaje          String
-  prioridad        Priority         @default(media)
-  leida            Boolean          @default(false)
-  fecha_envio      DateTime         @default(now())
-  fecha_lectura    DateTime?
+  titulo            String           @db.VarChar(200)
+  mensaje           String
+  prioridad         Priority         @default(media)
+  leida             Boolean          @default(false)
+  fecha_envio       DateTime         @default(now())
+  fecha_lectura     DateTime?
 
-  usuario          Usuario          @relation(fields: [id_usuario], references: [id_usuario], onDelete: Cascade)
-  alerta           AlertaConfig?    @relation(fields: [id_alerta_config], references: [id_alerta_config], onDelete: SetNull)
+  usuario Usuario       @relation(fields: [id_usuario], references: [id_usuario], onDelete: Cascade)
+  alerta  AlertaConfig? @relation(fields: [id_alerta_config], references: [id_alerta_config], onDelete: SetNull)
 
   @@index([id_usuario, leida], map: "idx_usuario_leida")
   @@index([fecha_envio], map: "idx_fecha_envio")
@@ -220,16 +223,16 @@ model Notificacion {
 }
 
 model Sesion {
-  id_sesion        Int       @id @default(autoincrement())
+  id_sesion        Int      @id @default(autoincrement())
   id_usuario       Int
-  token            String    @unique @db.VarChar(255)
-  ip_address       String?   @db.VarChar(45)
+  token            String   @unique @db.VarChar(255)
+  ip_address       String?  @db.VarChar(45)
   user_agent       String?
-  fecha_inicio     DateTime  @default(now())
+  fecha_inicio     DateTime @default(now())
   fecha_expiracion DateTime
-  activa           Boolean   @default(true)
+  activa           Boolean  @default(true)
 
-  usuario          Usuario   @relation(fields: [id_usuario], references: [id_usuario], onDelete: Cascade)
+  usuario Usuario @relation(fields: [id_usuario], references: [id_usuario], onDelete: Cascade)
 
   @@index([token], map: "idx_token")
   @@index([fecha_expiracion], map: "idx_expiracion")
@@ -237,15 +240,15 @@ model Sesion {
 }
 
 model LogSeguridad {
-  id_log         Int       @id @default(autoincrement())
-  id_usuario     Int?
-  accion         String    @db.VarChar(100)
-  descripcion    String?
-  ip_address     String?   @db.VarChar(45)
-  resultado      Result
-  fecha_accion   DateTime  @default(now())
+  id_log       Int      @id @default(autoincrement())
+  id_usuario   Int?
+  accion       String   @db.VarChar(100)
+  descripcion  String?
+  ip_address   String?  @db.VarChar(45)
+  resultado    Result
+  fecha_accion DateTime @default(now())
 
-  usuario        Usuario?  @relation(fields: [id_usuario], references: [id_usuario], onDelete: SetNull)
+  usuario Usuario? @relation(fields: [id_usuario], references: [id_usuario], onDelete: SetNull)
 
   @@index([id_usuario, fecha_accion], map: "idx_usuario_fecha")
   @@map("logs_seguridad")
@@ -256,46 +259,44 @@ model LogSeguridad {
 // y marcarlos como solo-lectura. Aquí las dejo como comentario SQL para ejecutar
 // en una migración o directamente en la base de datos:
 
-/*
-CREATE VIEW vista_presupuestos_resumen AS
-SELECT 
-    p.id_presupuesto,
-    p.id_usuario,
-    p.nombre_presupuesto,
-    c.nombre_categoria,
-    p.monto_limite,
-    p.monto_gastado,
-    (p.monto_limite - p.monto_gastado) AS monto_disponible,
-    ROUND((p.monto_gastado / p.monto_limite) * 100, 2) AS porcentaje_usado,
-    p.periodo,
-    p.fecha_inicio,
-    p.fecha_fin,
-    CASE 
-        WHEN p.monto_gastado >= p.monto_limite THEN 'excedido'
-        WHEN p.monto_gastado >= (p.monto_limite * 0.8) THEN 'alerta'
-        ELSE 'normal'
-    END AS estado
-FROM presupuestos p
-INNER JOIN categorias c ON p.id_categoria = c.id_categoria
-WHERE p.activo = TRUE;
-
-CREATE VIEW vista_transacciones_completas AS
-SELECT 
-    t.id_transaccion,
-    t.id_cuenta,
-    c.nombre_cuenta,
-    u.id_usuario,
-    u.nombre_completo,
-    t.tipo_transaccion,
-    t.monto,
-    t.descripcion,
-    t.merchant_nombre,
-    cat.nombre_categoria,
-    t.fecha_transaccion,
-    t.estado
-FROM transacciones t
-INNER JOIN cuentas c ON t.id_cuenta = c.id_cuenta
-INNER JOIN usuarios u ON c.id_usuario = u.id_usuario
-LEFT JOIN categorias cat ON t.id_categoria = cat.id_categoria;
-*/
-
+/**
+ * CREATE VIEW vista_presupuestos_resumen AS
+ * SELECT
+ * p.id_presupuesto,
+ * p.id_usuario,
+ * p.nombre_presupuesto,
+ * c.nombre_categoria,
+ * p.monto_limite,
+ * p.monto_gastado,
+ * (p.monto_limite - p.monto_gastado) AS monto_disponible,
+ * ROUND((p.monto_gastado / p.monto_limite) * 100, 2) AS porcentaje_usado,
+ * p.periodo,
+ * p.fecha_inicio,
+ * p.fecha_fin,
+ * CASE
+ * WHEN p.monto_gastado >= p.monto_limite THEN 'excedido'
+ * WHEN p.monto_gastado >= (p.monto_limite * 0.8) THEN 'alerta'
+ * ELSE 'normal'
+ * END AS estado
+ * FROM presupuestos p
+ * INNER JOIN categorias c ON p.id_categoria = c.id_categoria
+ * WHERE p.activo = TRUE;
+ * CREATE VIEW vista_transacciones_completas AS
+ * SELECT
+ * t.id_transaccion,
+ * t.id_cuenta,
+ * c.nombre_cuenta,
+ * u.id_usuario,
+ * u.nombre_completo,
+ * t.tipo_transaccion,
+ * t.monto,
+ * t.descripcion,
+ * t.merchant_nombre,
+ * cat.nombre_categoria,
+ * t.fecha_transaccion,
+ * t.estado
+ * FROM transacciones t
+ * INNER JOIN cuentas c ON t.id_cuenta = c.id_cuenta
+ * INNER JOIN usuarios u ON c.id_usuario = u.id_usuario
+ * LEFT JOIN categorias cat ON t.id_categoria = cat.id_categoria;
+ */

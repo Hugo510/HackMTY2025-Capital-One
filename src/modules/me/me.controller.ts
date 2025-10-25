@@ -7,9 +7,9 @@ const router = Router();
 router.get('/', authJwt, async (req: Request, res: Response) => {
   // @ts-ignore
   const userId = req.userId as string;
-  const user = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, email: true } });
-  if (!user) return res.status(404).json({ error: 'User not found' });
-  return res.json({ user });
+  const usuario = await prisma.usuario.findUnique({ where: { id_usuario: Number(userId) }, select: { id_usuario: true, email: true } });
+  if (!usuario) return res.status(404).json({ error: 'User not found' });
+  return res.json({ user: { id: String(usuario.id_usuario), email: usuario.email } });
 });
 
 export default router;

@@ -3,7 +3,6 @@ import helmet from 'helmet';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import dotenv from 'dotenv';
-
 import routes from './routes';
 import swaggerSpec from './config/swagger';
 import { pinoMiddleware } from './core/logger';

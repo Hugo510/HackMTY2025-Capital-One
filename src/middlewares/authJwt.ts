@@ -21,8 +21,6 @@ export const authJwt = (req: Request, res: Response, next: NextFunction) => {
   try {
     const decoded = jwt.verify(token, config.JWT_SECRET) as JwtPayload;
     // attach user id to request
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     req.userId = decoded.sub;
     return next();
   } catch (err) {
